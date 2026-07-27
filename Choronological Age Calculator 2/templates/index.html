@@ -1,0 +1,600 @@
+<!DOCT<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Calculate your exact chronological age, compare ages, and see a live-updating breakdown of years, months, days, hours, minutes and seconds.">
+    <title>ChronoAge — Chronological Age Calculator</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', sans-serif; }
+
+        :root{
+            --bg: #f8fafc;
+            --text: #1e293b;
+            --text-dim: #64748b;
+            --text-faint: #94a3b8;
+            --card: #ffffff;
+            --border: #e2e8f0;
+            --navy: #0f172a;
+            --navy-2: #1e293b;
+            --blue: #0284c7;
+            --blue-dark: #0369a1;
+            --input-bg: #ffffff;
+        }
+        [data-theme="dark"]{
+            --bg: #0b1120;
+            --text: #f1f5f9;
+            --text-dim: #94a3b8;
+            --text-faint: #64748b;
+            --card: #141b2d;
+            --border: #263148;
+            --navy: #0a0f1c;
+            --navy-2: #141b2d;
+            --blue: #38bdf8;
+            --blue-dark: #0ea5e9;
+            --input-bg: #0b1120;
+        }
+
+        body { background-color: var(--bg); color: var(--text); display: flex; flex-direction: column; min-height: 100vh; transition: background-color .25s ease, color .25s ease; }
+
+        .top-navbar { background: var(--navy); border-bottom: 1px solid var(--navy-2); padding: 16px 40px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 10px rgba(0,0,0,0.15); }
+        .top-brand { font-size: 22px; font-weight: 700; color: #ffffff; display: flex; align-items: center; gap: 10px; text-decoration: none; }
+        .top-brand span { color: #38bdf8; }
+        .top-nav-links { display: flex; gap: 24px; align-items: center; list-style: none; }
+        .top-nav-links a { color: #94a3b8; text-decoration: none; font-size: 14px; font-weight: 500; transition: 0.2s; display: flex; align-items: center; gap: 8px; }
+        .top-nav-links a:hover { color: #38bdf8; }
+        .header-btn { background: #0284c7; color: white !important; padding: 9px 18px; border-radius: 6px; font-weight: 600 !important; }
+        .header-btn:hover { background: #0369a1 !important; }
+        .theme-toggle { background: rgba(148,163,184,0.12); border: 1px solid #334155; color: #cbd5e1; width: 36px; height: 36px; border-radius: 8px; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 14px; transition: 0.2s; }
+        .theme-toggle:hover { border-color: #38bdf8; color: #38bdf8; }
+
+        .main-content { max-width: 1100px; width: 100%; margin: 0 auto; padding: 40px 20px; flex: 1; }
+        .header { margin-bottom: 30px; }
+        .header h1 { font-size: 26px; font-weight: 700; color: var(--text); }
+        .header p { font-size: 14px; color: var(--text-dim); margin-top: 8px; line-height: 1.6; max-width: 700px; }
+
+        .section-title { font-size: 15px; font-weight: 600; color: var(--text-dim); margin: 34px 0 15px 0; display: flex; align-items: center; gap: 8px; }
+
+        .top-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+        @media (max-width: 800px){ .top-grid{ grid-template-columns: 1fr; } }
+        .card { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 24px; box-shadow: 0 1px 3px rgba(0,0,0,0.02); transition: background-color .25s ease, border-color .25s ease; }
+
+        .form-group { margin-bottom: 16px; }
+        label { display: block; font-size: 12px; font-weight: 600; color: var(--text-dim); margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.5px; }
+        input[type="date"] { width: 100%; padding: 11px 14px; border: 1px solid var(--border); border-radius: 8px; font-size: 14px; outline: none; transition: 0.2s; background: var(--input-bg); color: var(--text); color-scheme: light; }
+        [data-theme="dark"] input[type="date"] { color-scheme: dark; }
+        input[type="date"]:focus { border-color: var(--blue); box-shadow: 0 0 0 3px rgba(2, 132, 199, 0.15); }
+        
+        .btn-group { display: flex; gap: 10px; margin-top: 12px; }
+        .btn-calc { flex: 1; background: var(--blue); color: white; border: none; padding: 12px; border-radius: 8px; font-weight: 600; font-size: 14px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; transition: 0.2s; }
+        .btn-calc:hover { background: var(--blue-dark); }
+        .btn-reset { background: var(--bg); color: var(--text-dim); border: 1px solid var(--border); padding: 12px 20px; border-radius: 8px; font-weight: 600; text-decoration: none; font-size: 14px; display: inline-flex; align-items: center; justify-content: center; }
+        .btn-reset:hover { background: var(--border); }
+
+        .result-hero { background: linear-gradient(135deg, #0284c7, #2563eb); color: white; border-radius: 12px; padding: 26px; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; position: relative; }
+        .result-hero.empty { background: var(--card); border: 2px dashed var(--border); color: var(--text-dim); }
+        .result-hero h2 { font-size: 32px; font-weight: 700; margin-top: 8px; }
+        .result-hero p { font-size: 13px; opacity: 0.9; }
+        .live-badge { position: absolute; top: 14px; right: 14px; background: rgba(255,255,255,0.18); padding: 4px 10px; border-radius: 20px; font-size: 10.5px; font-weight: 700; letter-spacing: .05em; display: flex; align-items: center; gap: 6px; }
+        .live-dot { width: 6px; height: 6px; border-radius: 50%; background: #4ade80; animation: pulse 1.4s ease-in-out infinite; }
+        @keyframes pulse { 0%,100%{opacity:1;} 50%{opacity:.3;} }
+
+        .result-actions { display: flex; gap: 10px; margin-top: 16px; }
+        .action-btn { background: rgba(255,255,255,0.16); border: 1px solid rgba(255,255,255,0.3); color: #fff; padding: 8px 14px; border-radius: 7px; font-size: 12.5px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 6px; transition: 0.2s; }
+        .action-btn:hover { background: rgba(255,255,255,0.28); }
+
+        .metrics-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+        @media (max-width: 800px){ .metrics-grid{ grid-template-columns: 1fr 1fr; } }
+        @media (max-width: 480px){ .metrics-grid{ grid-template-columns: 1fr; } }
+        .metric-card { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 20px; display: flex; align-items: center; gap: 16px; transition: transform .2s ease, border-color .2s ease; }
+        .metric-card:hover { transform: translateY(-2px); border-color: var(--blue); }
+        .icon-box { width: 46px; height: 46px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0; }
+        
+        .bg-blue { background: #e0f2fe; color: #0284c7; }
+        .bg-green { background: #dcfce7; color: #16a34a; }
+        .bg-orange { background: #ffedd5; color: #ea580c; }
+        .bg-purple { background: #f3e8ff; color: #9333ea; }
+        .bg-pink { background: #fce7f3; color: #db2777; }
+        .bg-red { background: #fee2e2; color: #dc2626; }
+        .bg-teal { background: #ccfbf1; color: #0d9488; }
+        .bg-slate { background: #f1f5f9; color: #475569; }
+        [data-theme="dark"] .bg-blue{ background: rgba(2,132,199,0.18); }
+        [data-theme="dark"] .bg-green{ background: rgba(22,163,74,0.18); }
+        [data-theme="dark"] .bg-orange{ background: rgba(234,88,12,0.18); }
+        [data-theme="dark"] .bg-purple{ background: rgba(147,51,234,0.18); }
+        [data-theme="dark"] .bg-pink{ background: rgba(219,39,119,0.18); }
+        [data-theme="dark"] .bg-red{ background: rgba(220,38,38,0.18); }
+        [data-theme="dark"] .bg-teal{ background: rgba(13,148,136,0.2); }
+        [data-theme="dark"] .bg-slate{ background: rgba(100,116,139,0.2); }
+
+        .metric-data .val { font-size: 19px; font-weight: 700; color: var(--text); font-variant-numeric: tabular-nums; }
+        .metric-data .lbl { font-size: 12px; color: var(--text-dim); margin-top: 2px; }
+
+        .about-card { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 28px; margin-top: 35px; }
+        .about-card h2 { font-size: 18px; font-weight: 700; color: var(--text); margin-bottom: 12px; display: flex; align-items: center; gap: 10px; }
+        .about-card p { font-size: 14px; color: var(--text-dim); line-height: 1.7; margin-bottom: 12px; }
+        .about-card p:last-child { margin-bottom: 0; }
+
+        .compare-card { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 28px; margin-top: 25px; }
+        .compare-card h2 { font-size: 18px; font-weight: 700; color: var(--text); margin-bottom: 6px; display: flex; align-items: center; gap: 10px; }
+        .compare-card > p { font-size: 13px; color: var(--text-dim); margin-bottom: 20px; }
+        .compare-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px; }
+        @media (max-width: 600px){ .compare-grid{ grid-template-columns: 1fr; } }
+        .compare-result { display: none; background: var(--bg); border: 1px solid var(--border); border-radius: 10px; padding: 18px 20px; margin-top: 6px; font-size: 14.5px; color: var(--text); }
+        .compare-result.show { display: block; }
+        .compare-result strong { color: var(--blue); }
+
+        .faq-section { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 28px; margin-top: 25px; }
+        .faq-section h2 { font-size: 18px; font-weight: 700; color: var(--text); margin-bottom: 20px; }
+        .faq-item { border-bottom: 1px solid var(--border); padding: 16px 0; }
+        .faq-item:last-child { border-bottom: none; }
+        .faq-question { font-size: 14px; font-weight: 600; color: var(--text); display: flex; justify-content: space-between; align-items: center; cursor: pointer; }
+        .faq-question i { color: var(--blue); font-size: 14px; transition: transform 0.3s; }
+        .faq-answer { font-size: 13px; color: var(--text-dim); line-height: 1.6; margin-top: 10px; display: none; }
+
+        .footer { background: var(--navy); color: #94a3b8; padding: 30px 40px; border-top: 1px solid var(--navy-2); display: flex; justify-content: space-between; align-items: center; font-size: 13px; margin-top: auto; flex-wrap: wrap; gap: 14px; }
+        .footer-brand { color: #ffffff; font-weight: 700; font-size: 16px; margin-bottom: 4px; }
+        .footer-brand span { color: #38bdf8; }
+        .footer-links { display: flex; gap: 24px; }
+        .footer-links a { color: #94a3b8; text-decoration: none; font-weight: 500; transition: 0.2s; }
+        .footer-links a:hover { color: #38bdf8; }
+
+        .error-banner { background: #fee2e2; border: 1px solid #fca5a5; color: #991b1b; padding: 12px 16px; border-radius: 8px; margin-bottom: 20px; font-size: 13px; }
+
+        .toast { position: fixed; bottom: 26px; left: 50%; transform: translateX(-50%) translateY(20px); background: var(--navy); color: #fff; font-weight: 600; font-size: 13.5px; padding: 11px 22px; border-radius: 10px; opacity: 0; pointer-events: none; transition: all .25s ease; z-index: 200; box-shadow: 0 8px 24px rgba(0,0,0,0.3); }
+        .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+    </style>
+</head>
+<body>
+
+    <header class="top-navbar">
+        <a href="/" class="top-brand">
+            <i class="fa-solid fa-clock"></i> Chrono<span>Age</span>
+        </a>
+        <ul class="top-nav-links">
+            <li><a href="#"><i class="fa-solid fa-calculator"></i> Calculator</a></li>
+            <li><a href="#compare"><i class="fa-solid fa-scale-balanced"></i> Compare</a></li>
+            <li><a href="#about"><i class="fa-solid fa-circle-info"></i> About</a></li>
+            <li><a href="#faq"><i class="fa-solid fa-circle-question"></i> FAQ</a></li>
+            <li><button class="theme-toggle" id="themeToggle" title="Toggle dark/light mode"><i class="fa-solid fa-moon" id="themeIcon"></i></button></li>
+            <li><a href="/" class="header-btn"><i class="fa-solid fa-rotate-left"></i> Reset</a></li>
+        </ul>
+    </header>
+
+    <div class="main-content">
+        <div class="header">
+            <h1>Chronological Age Calculator</h1>
+            <p>Welcome to <strong>ChronoAge</strong> — a precise chronological engine designed to measure your exact age from birth down to the total seconds. Enter your birth date below to get detailed breakdowns, live counters, and birthday countdowns instantly.</p>
+        </div>
+
+        {% if error %}
+            <div class="error-banner"><i class="fa-solid fa-circle-exclamation"></i> {{ error }}</div>
+        {% endif %}
+
+        <div class="top-grid">
+            <div class="card">
+                <div class="section-title" style="margin-top: 0;">
+                    <i class="fa-regular fa-calendar-check"></i> Enter Date Metrics
+                </div>
+                <form method="POST">
+                    <div class="form-group">
+                        <label>Date of Birth</label>
+                        <input type="date" name="dob" value="{{ dob }}" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Age at the Date of</label>
+                        <input type="date" name="target_date" value="{{ target }}" required>
+                    </div>
+                    <div class="btn-group">
+                        <button type="submit" class="btn-calc"><i class="fa-solid fa-bolt"></i> Calculate Age</button>
+                        <a href="/" class="btn-reset"><i class="fa-solid fa-rotate-left"></i> Reset</a>
+                    </div>
+                </form>
+            </div>
+
+            {% if results %}
+            <div class="result-hero" id="resultHero" data-dob="{{ dob }}" data-is-today="{{ 'true' if results.is_today else 'false' }}">
+                {% if results.is_today %}
+                <div class="live-badge"><span class="live-dot"></span>LIVE</div>
+                {% endif %}
+                <p><i class="fa-solid fa-ribbon"></i> CHRONOLOGICAL AGE RESULT</p>
+                <h2>{{ results.years }}y {{ results.months }}m {{ results.days }}d</h2>
+                <p style="margin-top: 6px;">Exact duration between selected dates</p>
+                <div class="result-actions">
+                    <button class="action-btn" id="copyBtn"><i class="fa-solid fa-copy"></i> Copy</button>
+                    <button class="action-btn" id="shareBtn"><i class="fa-solid fa-share-nodes"></i> Share</button>
+                </div>
+            </div>
+            {% else %}
+            <div class="result-hero empty">
+                <i class="fa-regular fa-calendar-days" style="font-size: 36px; margin-bottom: 12px; color: var(--blue);"></i>
+                <h3 style="font-size: 16px; font-weight: 600; color: var(--text);">Select dates & click Calculate</h3>
+                <p>Exact duration between dates will appear here</p>
+            </div>
+            {% endif %}
+        </div>
+
+        {% if results %}
+        <div class="section-title"><i class="fa-solid fa-chart-simple"></i> Detailed Time Breakdown {% if results.is_today %}<span style="font-size:11px;color:#16a34a;font-weight:700;">(live)</span>{% endif %}</div>
+        <div class="metrics-grid">
+            <div class="metric-card">
+                <div class="icon-box bg-blue"><i class="fa-solid fa-calendar"></i></div>
+                <div class="metric-data">
+                    <div class="val">{{ results.total_months }}</div>
+                    <div class="lbl">Total Months (+ {{ results.days }} days)</div>
+                </div>
+            </div>
+
+            <div class="metric-card">
+                <div class="icon-box bg-green"><i class="fa-solid fa-calendar-week"></i></div>
+                <div class="metric-data">
+                    <div class="val">{{ results.total_weeks }}</div>
+                    <div class="lbl">Total Weeks (+ {{ results.rem_days_weeks }} days)</div>
+                </div>
+            </div>
+
+            <div class="metric-card">
+                <div class="icon-box bg-orange"><i class="fa-solid fa-sun"></i></div>
+                <div class="metric-data">
+                    <div class="val" id="liveDays">{{ results.total_days }}</div>
+                    <div class="lbl">Total Days</div>
+                </div>
+            </div>
+
+            <div class="metric-card">
+                <div class="icon-box bg-purple"><i class="fa-solid fa-hourglass-half"></i></div>
+                <div class="metric-data">
+                    <div class="val" id="liveHours">{{ results.total_hours }}</div>
+                    <div class="lbl">Total Hours</div>
+                </div>
+            </div>
+
+            <div class="metric-card">
+                <div class="icon-box bg-pink"><i class="fa-solid fa-stopwatch"></i></div>
+                <div class="metric-data">
+                    <div class="val" id="liveMinutes">{{ results.total_minutes }}</div>
+                    <div class="lbl">Total Minutes</div>
+                </div>
+            </div>
+
+            <div class="metric-card">
+                <div class="icon-box bg-red"><i class="fa-solid fa-bolt-lightning"></i></div>
+                <div class="metric-data">
+                    <div class="val" id="liveSeconds">{{ results.total_seconds }}</div>
+                    <div class="lbl">Total Seconds</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="section-title"><i class="fa-solid fa-sparkles"></i> Insights & Astro Stats</div>
+        <div class="metrics-grid">
+            <div class="metric-card">
+                <div class="icon-box bg-orange"><i class="fa-solid fa-star-and-crescent"></i></div>
+                <div class="metric-data">
+                    <div class="val" id="hijriDateVal">{{ results.hijri_birth_date if results.hijri_birth_date else 'Calculating...' }}</div>
+                    <div class="lbl">Islamic (Hijri) Birth Date</div>
+                </div>
+            </div>
+
+            <div class="metric-card">
+                <div class="icon-box bg-blue"><i class="fa-solid fa-cake-candles"></i></div>
+                <div class="metric-data">
+                    <div class="val">{{ results.next_bday_days }} Days</div>
+                    <div class="lbl">Next Birthday ({{ results.next_bday_day_name }})</div>
+                </div>
+            </div>
+
+            <div class="metric-card">
+                <div class="icon-box bg-green"><i class="fa-solid fa-business-time"></i></div>
+                <div class="metric-data">
+                    <div class="val">{{ results.born_day }}</div>
+                    <div class="lbl">Day Born On</div>
+                </div>
+            </div>
+
+            <div class="metric-card">
+                <div class="icon-box bg-purple"><i class="fa-solid fa-moon"></i></div>
+                <div class="metric-data">
+                    <div class="val">{{ results.zodiac }}</div>
+                    <div class="lbl">Zodiac Sign</div>
+                </div>
+            </div>
+
+            <div class="metric-card">
+                <div class="icon-box bg-teal"><i class="fa-solid fa-users"></i></div>
+                <div class="metric-data">
+                    <div class="val">{{ results.generation }}</div>
+                    <div class="lbl">Generation</div>
+                </div>
+            </div>
+
+            <div class="metric-card">
+                <div class="icon-box bg-slate"><i class="fa-solid fa-arrows-rotate"></i></div>
+                <div class="metric-data">
+                    <div class="val" id="leapYearVal">{{ 'Yes' if results.is_leap else 'Calculating...' }}</div>
+                    <div class="lbl">Born in a Leap Year</div>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+
+        <div class="about-card" id="about">
+            <h2><i class="fa-solid fa-circle-info" style="color: var(--blue);"></i> About This Chronological Age Calculator</h2>
+            <p>Chronological age refers to the exact span of time that has passed from a person's birth date to a specific target date. Unlike simple year subtractions, our tool accounts for varying month durations (28 to 31 days) and leap years, ensuring 100% mathematical precision.</p>
+            <p>Along with traditional years, months, and days, this dashboard converts your lifetime duration into total months, weeks, days, hours, minutes, and seconds — updating live when calculating age as of today — while providing insights such as your generational cohort, astrological zodiac sign, and day of birth.</p>
+        </div>
+
+        <div class="compare-card" id="compare">
+            <h2><i class="fa-solid fa-scale-balanced" style="color: var(--blue);"></i> Compare Two Ages</h2>
+            <p>Enter two dates of birth to see who is older and by exactly how much.</p>
+            <div class="compare-grid">
+                <div class="form-group" style="margin-bottom:0;">
+                    <label>Person A — Date of Birth</label>
+                    <input type="date" id="compareA">
+                </div>
+                <div class="form-group" style="margin-bottom:0;">
+                    <label>Person B — Date of Birth</label>
+                    <input type="date" id="compareB">
+                </div>
+            </div>
+            <button class="btn-calc" id="compareBtn" style="max-width:220px;"><i class="fa-solid fa-scale-balanced"></i> Compare Ages</button>
+            <div class="compare-result" id="compareResult"></div>
+        </div>
+
+        <div class="faq-section" id="faq">
+            <h2>Frequently Asked Questions</h2>
+
+            <div class="faq-item">
+                <div class="faq-question" onclick="toggleFaq(this)">
+                    <span>What is chronological age?</span>
+                    <i class="fa-solid fa-plus"></i>
+                </div>
+                <div class="faq-answer">
+                    Chronological age is the measure of time that has elapsed from a person's birth to a given date. It is expressed in years, months, and days.
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-question" onclick="toggleFaq(this)">
+                    <span>How is age calculated?</span>
+                    <i class="fa-solid fa-plus"></i>
+                </div>
+                <div class="faq-answer">
+                    Age is calculated by determining the exact difference between your date of birth and the target date, adjusting for leap years, varying month lengths, and exact time units.
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-question" onclick="toggleFaq(this)">
+                    <span>What is a leap year?</span>
+                    <i class="fa-solid fa-plus"></i>
+                </div>
+                <div class="faq-answer">
+                    A leap year occurs every 4 years and contains 366 days instead of 365, adding an extra day (February 29th) to keep the calendar synchronized with the astronomical year.
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-question" onclick="toggleFaq(this)">
+                    <span>Can I calculate age on a future or past date?</span>
+                    <i class="fa-solid fa-plus"></i>
+                </div>
+                <div class="faq-answer">
+                    Yes! You can change the "Age at the Date of" field to any date in the past or future to calculate your exact age at that point in time.
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-question" onclick="toggleFaq(this)">
+                    <span>What does the "Generation" label mean?</span>
+                    <i class="fa-solid fa-plus"></i>
+                </div>
+                <div class="faq-answer">
+                    It's the generational cohort your birth year falls into — for example Millennial, Generation Z, or Generation Alpha — based on commonly used birth-year ranges.
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <footer class="footer">
+        <div>
+            <div class="footer-brand">Chrono<span>Age</span></div>
+            <p>© 2026 Age Calculator. All rights reserved.</p>
+        </div>
+        <div class="footer-links">
+            <a href="#about">About</a>
+            <a href="#faq">FAQ</a>
+            <a href="#">Privacy Policy</a>
+            <a href="#">Terms of Service</a>
+        </div>
+    </footer>
+
+    <div class="toast" id="toast"></div>
+
+    <script>
+        function toggleFaq(element) {
+            const answer = element.nextElementSibling;
+            const icon = element.querySelector('i');
+            if (answer.style.display === "block") {
+                answer.style.display = "none";
+                icon.className = "fa-solid fa-plus";
+            } else {
+                answer.style.display = "block";
+                icon.className = "fa-solid fa-minus";
+            }
+        }
+
+        const themeToggle = document.getElementById('themeToggle');
+        const themeIcon = document.getElementById('themeIcon');
+        const root = document.documentElement;
+
+        function applyTheme(theme){
+            if(theme === 'dark'){
+                root.setAttribute('data-theme', 'dark');
+                themeIcon.className = 'fa-solid fa-sun';
+            } else {
+                root.removeAttribute('data-theme');
+                themeIcon.className = 'fa-solid fa-moon';
+            }
+        }
+        const savedTheme = localStorage.getItem('chronoage-theme') || 'light';
+        applyTheme(savedTheme);
+
+        themeToggle.addEventListener('click', () => {
+            const current = root.getAttribute('data-theme') === 'dark' ? 'dark' : 'light';
+            const next = current === 'dark' ? 'light' : 'dark';
+            applyTheme(next);
+            localStorage.setItem('chronoage-theme', next);
+        });
+
+        function showToast(msg){
+            const toast = document.getElementById('toast');
+            toast.textContent = msg;
+            toast.classList.add('show');
+            setTimeout(() => toast.classList.remove('show'), 2200);
+        }
+
+        const resultHero = document.getElementById('resultHero');
+        if(resultHero){
+            const copyBtn = document.getElementById('copyBtn');
+            const shareBtn = document.getElementById('shareBtn');
+            const summaryText = () => document.querySelector('.result-hero h2').textContent + ' — calculated with ChronoAge';
+
+            copyBtn.addEventListener('click', () => {
+                navigator.clipboard.writeText(summaryText())
+                    .then(() => showToast('Copied to clipboard'))
+                    .catch(() => showToast('Could not copy'));
+            });
+
+            shareBtn.addEventListener('click', async () => {
+                const text = summaryText();
+                if(navigator.share){
+                    try { await navigator.share({ title: 'My ChronoAge Result', text }); }
+                    catch(e){ /* user cancelled */ }
+                } else {
+                    navigator.clipboard.writeText(text).then(() => showToast('Link copied — share it anywhere'));
+                }
+            });
+
+            const isToday = resultHero.dataset.isToday === 'true';
+            const dobStr = resultHero.dataset.dob;
+            if(dobStr){
+                const dobDate = new Date(dobStr + 'T00:00:00');
+                
+                // Islamic (Hijri) Month & Date Converter Function
+                function getHijriDate(date) {
+                    const islamicMonths = [
+                        "Muharram", "Safar", "Rabi' al-Awwal", "Rabi' al-Thani",
+                        "Jumada al-Awwal", "Jumada al-Thani", "Rajab", "Sha'ban",
+                        "Ramadan", "Shawwal", "Dhu al-Qi'dah", "Dhu al-Hijjah"
+                    ];
+                    
+                    try {
+                        const formatter = new Intl.DateTimeFormat('en-u-ca-islamic-umalqura', {
+                            day: 'numeric',
+                            month: 'numeric',
+                            year: 'numeric'
+                        });
+                        
+                        const parts = formatter.formatToParts(date);
+                        let day = '', monthNum = '', year = '';
+                        
+                        for (const part of parts) {
+                            if (part.type === 'day') day = part.value;
+                            if (part.type === 'month') monthNum = parseInt(part.value, 10);
+                            if (part.type === 'year') year = part.value;
+                        }
+                        
+                        if (day && monthNum && year) {
+                            const monthName = islamicMonths[monthNum - 1] || '';
+                            return `${day} ${monthName} ${year} AH`;
+                        }
+                    } catch (e) {
+                        console.error("Hijri formatting failed:", e);
+                    }
+                    return "N/A";
+                }
+
+                // Update Hijri Value
+                const hijriElement = document.getElementById('hijriDateVal');
+                if (hijriElement) {
+                    hijriElement.textContent = getHijriDate(dobDate);
+                }
+
+                // Leap Year Calculation
+                const year = dobDate.getFullYear();
+                const isLeapYear = (year % 4 === 0 && year % 100 !== 0) || (year % 400 === 0);
+                const leapElement = document.getElementById('leapYearVal');
+                if (leapElement) {
+                    leapElement.textContent = isLeapYear ? 'Yes' : 'No';
+                }
+
+                if(isToday){
+                    const fmt = (n) => n.toLocaleString('en-US');
+                    function tick(){
+                        const now = new Date();
+                        const msElapsed = now - dobDate;
+                        if(msElapsed < 0) return;
+                        const totalSeconds = Math.floor(msElapsed / 1000);
+                        const totalMinutes = Math.floor(totalSeconds / 60);
+                        const totalHours = Math.floor(totalMinutes / 60);
+                        const totalDays = Math.floor(totalHours / 24);
+
+                        document.getElementById('liveDays').textContent = fmt(totalDays);
+                        document.getElementById('liveHours').textContent = fmt(totalHours);
+                        document.getElementById('liveMinutes').textContent = fmt(totalMinutes);
+                        document.getElementById('liveSeconds').textContent = fmt(totalSeconds);
+                    }
+                    tick();
+                    setInterval(tick, 1000);
+                }
+            }
+        }
+
+        function diffYMD(from, to){
+            let y = to.getFullYear() - from.getFullYear();
+            let m = to.getMonth() - from.getMonth();
+            let d = to.getDate() - from.getDate();
+            if(d < 0){
+                m -= 1;
+                d += new Date(to.getFullYear(), to.getMonth(), 0).getDate();
+            }
+            if(m < 0){ y -= 1; m += 12; }
+            return {y, m, d};
+        }
+
+        document.getElementById('compareBtn').addEventListener('click', () => {
+            const aVal = document.getElementById('compareA').value;
+            const bVal = document.getElementById('compareB').value;
+            const resultBox = document.getElementById('compareResult');
+
+            if(!aVal || !bVal){
+                resultBox.innerHTML = 'Please select both dates of birth.';
+                resultBox.classList.add('show');
+                return;
+            }
+
+            const a = new Date(aVal + 'T00:00:00');
+            const b = new Date(bVal + 'T00:00:00');
+
+            if(a.getTime() === b.getTime()){
+                resultBox.innerHTML = 'Both people were born on the exact same date.';
+                resultBox.classList.add('show');
+                return;
+            }
+
+            const older = a < b ? a : b;
+            const younger = a < b ? b : a;
+            const olderLabel = a < b ? 'Person A' : 'Person B';
+            const youngerLabel = a < b ? 'Person B' : 'Person A';
+
+            const {y, m, d} = diffYMD(older, younger);
+            resultBox.innerHTML = `<strong>${olderLabel}</strong> is older than <strong>${youngerLabel}</strong> by <strong>${y} years, ${m} months, ${d} days</strong>.`;
+            resultBox.classList.add('show');
+        });
+    </script>
+</body>
+</html>
