@@ -1,0 +1,24 @@
+[Post 1]: I love learning Python and Artificial Intelligence.
+Clean Tokens: ['love', 'learning', 'python', 'artificial', 'intelligence']
+Extracted Keywords: ['python', 'artificial', 'intelligence']
+--------------------------------------------------
+[Post 2]: Natural Language Processing is an exciting field.
+Clean Tokens: ['natural', 'language', 'processing', 'exciting', 'field']
+Extracted Keywords: ['natural', 'language', 'processing']
+--------------------------------------------------
+[Post 3]: Machine learning helps computers learn from data.
+Clean Tokens: ['machine', 'learning', 'helps', 'computers', 'learn', 'data']
+Extracted Keywords: ['machine', 'learning', 'computer']
+--------------------------------------------------
+[Post 4]: Python is great for NLP projects and automation.
+Clean Tokens: ['python', 'great', 'nlp', 'projects', 'automation']
+Extracted Keywords: ['python', 'great', 'nlp']
+--------------------------------------------------
+[Post 5]: AI and Data Science are transforming the world.
+Clean Tokens: ['data', 'science', 'transforming', 'world']
+Extracted Keywords: ['ai', 'data', 'science']
+--------------------------------------------------
+[Post 6]: I enjoy reading books about deep learning and neural networks.
+Clean Tokens: ['enjoy', 'reading', 'books', 'deep', 'learning', 'neural', 'networks']
+Extracted Keywords: ['book', 'deep', 'learning']
+--------------------------------------------------
