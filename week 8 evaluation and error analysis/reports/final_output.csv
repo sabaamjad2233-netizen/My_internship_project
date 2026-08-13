@@ -1,0 +1,6 @@
+text,actual,predicted,confidence,filtered_prediction
+The product quality is amazing!,1,1,0.95,1
+"Broke in two days, wonderful job!",0,1,0.88,1
+"It is okay, nothing special.",0,1,0.52,Needs Manual Review
+Worst customer service ever.,0,0,0.91,0
+"Great, another delivery delay. Thanks!",0,1,0.82,1

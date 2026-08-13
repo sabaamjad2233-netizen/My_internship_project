@@ -1,0 +1,3 @@
+text,actual,predicted,confidence
+"Broke in two days, wonderful job!",0,1,0.88
+"Great, another delivery delay. Thanks!",0,1,0.82

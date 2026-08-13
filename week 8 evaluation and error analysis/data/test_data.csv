@@ -1,0 +1,6 @@
+text,actual,predicted,confidence
+"The product quality is amazing!",1,1,0.95
+"Broke in two days, wonderful job!",0,1,0.88
+"It is okay, nothing special.",0,1,0.52
+"Worst customer service ever.",0,0,0.91
+"Great, another delivery delay. Thanks!",0,1,0.82
